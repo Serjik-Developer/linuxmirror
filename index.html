@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>linuxmirror.host — Linux Distribution Mirror</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <div class="container">
+      <div class="logo">
+        <span class="logo-icon">⟁</span>
+        <div>
+          <h1>linuxmirror.host</h1>
+          <p class="tagline">Community Linux Distribution Mirror</p>
+        </div>
+      </div>
+      <nav>
+        <a href="#mirrors">Mirrors</a>
+        <a href="#status">Status</a>
+        <a href="#about">About</a>
+        <a href="#contact">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="hero">
+    <div class="container">
+      <div class="hero-stats">
+        <div class="stat">
+          <span class="stat-value">40+</span>
+          <span class="stat-label">Distributions</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat">
+          <span class="stat-value">10 Gbps</span>
+          <span class="stat-label">Uplink</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat">
+          <span class="stat-value">98.7%</span>
+          <span class="stat-label">Uptime (30d)</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat">
+          <span class="stat-value">18 TB</span>
+          <span class="stat-label">Storage</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <main class="container">
+
+    <section id="mirrors">
+      <h2 class="section-title">Available Mirrors</h2>
+      <p class="section-desc">All distributions are synced from official upstream sources. Last sync times are displayed below.</p>
+
+      <div class="protocol-tabs">
+        <button class="tab active" onclick="switchTab('https')">HTTPS</button>
+        <button class="tab" onclick="switchTab('ftp')">FTP</button>
+        <button class="tab" onclick="switchTab('rsync')">RSYNC</button>
+      </div>
+
+      <table class="mirror-table">
+        <thead>
+          <tr>
+            <th>Distribution</th>
+            <th>Version</th>
+            <th>Arch</th>
+            <th>Size</th>
+            <th>Last Sync</th>
+            <th>Link</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="dist-row">
+            <td><span class="dist-badge ubuntu">Ubuntu</span></td>
+            <td>24.04 LTS, 22.04 LTS, 20.04 LTS</td>
+            <td>amd64, arm64, s390x</td>
+            <td>1.8 TB</td>
+            <td><span class="sync-ok">2h ago</span></td>
+            <td><a href="#" class="link-btn" data-proto="https" data-path="/ubuntu/">/ubuntu/</a></td>
+          </tr>
+          <tr class="dist-row">
+            <td><span class="dist-badge debian">Debian</span></td>
+            <td>12 (Bookworm), 11 (Bullseye)</td>
+            <td>amd64, i386, arm64, armhf</td>
+            <td>2.1 TB</td>
+            <td><span class="sync-ok">1h ago</span></td>
+            <td><a href="#" class="link-btn" data-proto="https" data-path="/debian/">/debian/</a></td>
+          </tr>
+          <tr class="dist-row">
+            <td><span class="dist-badge fedora">Fedora</span></td>
+            <td>40, 39, 38</td>
+            <td>x86_64, aarch64</td>
+            <td>1.2 TB</td>
+            <td><span class="sync-ok">3h ago</span></td>
+            <td><a href="#" class="link-btn" data-proto="https" data-path="/fedora/">/fedora/</a></td>
+          </tr>
+          <tr class="dist-row">
+            <td><span class="dist-badge arch">Arch Linux</span></td>
+            <td>Rolling</td>
+            <td>x86_64</td>
+            <td>94 GB</td>
+            <td><span class="sync-ok">30m ago</span></td>
+            <td><a href="#" class="link-btn" data-proto="https" data-path="/archlinux/">/archlinux/</a></td>
+          </tr>
+          <tr class="dist-row">
+            <td><span class="dist-badge centos">CentOS Stream</span></td>
+            <td>10, 9</td>
+            <td>x86_64, aarch64, ppc64le</td>
+            <td>890 GB</td>
+            <td><span class="sync-ok">4h ago</span></td>
+            <td><a href="#" class="link-btn" data-proto="https" data-path="/centos/">/centos/</a></td>
+          </tr>
+          <tr class="dist-row">
+            <td><span class="dist-badge opensuse">openSUSE</span></td>
+            <td>Tumbleweed, Leap 15.6</td>
+            <td>x86_64, aarch64</td>
+            <td>1.4 TB</td>
+            <td><span class="sync-ok">5h ago</span></td>
+            <td><a href="#" class="link-btn" data-proto="https" data-path="/opensuse/">/opensuse/</a></td>
+          </tr>
+          <tr class="dist-row">
+            <td><span class="dist-badge alpine">Alpine Linux</span></td>
+            <td>3.20, 3.19, 3.18</td>
+            <td>x86_64, x86, aarch64, armv7</td>
+            <td>78 GB</td>
+            <td><span class="sync-ok">1h ago</span></td>
+            <td><a href="#" class="link-btn" data-proto="https" data-path="/alpine/">/alpine/</a></td>
+          </tr>
+          <tr class="dist-row">
+            <td><span class="dist-badge gentoo">Gentoo</span></td>
+            <td>Rolling</td>
+            <td>amd64, x86, arm64</td>
+            <td>320 GB</td>
+            <td><span class="sync-ok">6h ago</span></td>
+            <td><a href="#" class="link-btn" data-proto="https" data-path="/gentoo/">/gentoo/</a></td>
+          </tr>
+          <tr class="dist-row">
+            <td><span class="dist-badge mint">Linux Mint</span></td>
+            <td>21.3, 21.2</td>
+            <td>amd64</td>
+            <td>142 GB</td>
+            <td><span class="sync-ok">8h ago</span></td>
+            <td><a href="#" class="link-btn" data-proto="https" data-path="/linuxmint/">/linuxmint/</a></td>
+          </tr>
+          <tr class="dist-row">
+            <td><span class="dist-badge kali">Kali Linux</span></td>
+            <td>2024.2, Rolling</td>
+            <td>amd64, arm64</td>
+            <td>510 GB</td>
+            <td><span class="sync-warn">12h ago</span></td>
+            <td><a href="#" class="link-btn" data-proto="https" data-path="/kali/">/kali/</a></td>
+          </tr>
+          <tr class="dist-row">
+            <td><span class="dist-badge rocky">Rocky Linux</span></td>
+            <td>9.4, 8.10</td>
+            <td>x86_64, aarch64</td>
+            <td>670 GB</td>
+            <td><span class="sync-ok">3h ago</span></td>
+            <td><a href="#" class="link-btn" data-proto="https" data-path="/rocky/">/rocky/</a></td>
+          </tr>
+          <tr class="dist-row">
+            <td><span class="dist-badge nixos">NixOS</span></td>
+            <td>24.05, 23.11</td>
+            <td>x86_64, aarch64</td>
+            <td>430 GB</td>
+            <td><span class="sync-ok">2h ago</span></td>
+            <td><a href="#" class="link-btn" data-proto="https" data-path="/nixos/">/nixos/</a></td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="status">
+      <h2 class="section-title">Mirror Status</h2>
+      <div class="status-grid">
+        <div class="status-card">
+          <div class="status-header">
+            <span class="status-dot green"></span>
+            <strong>HTTP/HTTPS</strong>
+          </div>
+          <p>Operational</p>
+          <code>https://linuxmirror.host/</code>
+        </div>
+        <div class="status-card">
+          <div class="status-header">
+            <span class="status-dot green"></span>
+            <strong>FTP</strong>
+          </div>
+          <p>Operational</p>
+          <code>ftp://linuxmirror.host/</code>
+        </div>
+        <div class="status-card">
+          <div class="status-header">
+            <span class="status-dot green"></span>
+            <strong>RSYNC</strong>
+          </div>
+          <p>Operational</p>
+          <code>rsync://linuxmirror.host/</code>
+        </div>
+        <div class="status-card">
+          <div class="status-header">
+            <span class="status-dot green"></span>
+            <strong>IPv6</strong>
+          </div>
+          <p>Supported</p>
+          <code>AAAA record active</code>
+        </div>
+      </div>
+
+      <div class="bandwidth-info">
+        <h3>Bandwidth Usage (Last 30 Days)</h3>
+        <div class="bw-bars">
+          <div class="bw-bar-row"><span>Ubuntu</span><div class="bar-wrap"><div class="bar-fill" style="width:82%"></div></div><span>82%</span></div>
+          <div class="bw-bar-row"><span>Debian</span><div class="bar-wrap"><div class="bar-fill" style="width:68%"></div></div><span>68%</span></div>
+          <div class="bw-bar-row"><span>Arch Linux</span><div class="bar-wrap"><div class="bar-fill" style="width:55%"></div></div><span>55%</span></div>
+          <div class="bw-bar-row"><span>Fedora</span><div class="bar-wrap"><div class="bar-fill" style="width:41%"></div></div><span>41%</span></div>
+          <div class="bw-bar-row"><span>Other</span><div class="bar-wrap"><div class="bar-fill" style="width:30%"></div></div><span>30%</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="about">
+      <h2 class="section-title">About This Mirror</h2>
+      <div class="about-grid">
+        <div class="about-card">
+          <h3>Infrastructure</h3>
+          <ul>
+            <li>Location: Frankfurt, DE (EU)</li>
+            <li>Uplink: 10 Gbps dedicated</li>
+            <li>Storage: 18 TB NVMe RAID-10</li>
+            <li>IPv4 + IPv6 dual-stack</li>
+            <li>TLS 1.3, HTTP/2 &amp; HTTP/3</li>
+          </ul>
+        </div>
+        <div class="about-card">
+          <h3>Sync Policy</h3>
+          <ul>
+            <li>Synced from official tier-1 mirrors</li>
+            <li>Active distributions: every 1–6h</li>
+            <li>ISOs: every 24h</li>
+            <li>GPG signatures preserved</li>
+            <li>Checksums verified on sync</li>
+          </ul>
+        </div>
+        <div class="about-card">
+          <h3>Usage</h3>
+          <ul>
+            <li>Free to use, no registration</li>
+            <li>No rate limiting for apt/dnf/pacman</li>
+            <li>Please use rsync for large pulls</li>
+            <li>Mirroring requests welcome</li>
+            <li>DMCA-exempt educational use</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="config">
+      <h2 class="section-title">Quick Configuration</h2>
+      <div class="config-tabs">
+        <button class="cfg-tab active" onclick="showConfig('ubuntu')">Ubuntu/Debian</button>
+        <button class="cfg-tab" onclick="showConfig('arch')">Arch Linux</button>
+        <button class="cfg-tab" onclick="showConfig('fedora')">Fedora/RHEL</button>
+        <button class="cfg-tab" onclick="showConfig('alpine')">Alpine</button>
+      </div>
+
+      <div id="cfg-ubuntu" class="config-block active">
+        <p>Edit <code>/etc/apt/sources.list</code> (или <code>/etc/apt/sources.list.d/linuxmirror.list</code>):</p>
+        <pre><span class="comment"># Ubuntu 24.04 (Noble) — /etc/apt/sources.list</span>
+deb https://linuxmirror.host/ubuntu noble main restricted universe multiverse
+deb https://linuxmirror.host/ubuntu noble-updates main restricted universe multiverse
+deb https://linuxmirror.host/ubuntu-security noble-security main restricted universe multiverse
+
+<span class="comment"># arm64/armhf — ports</span>
+deb https://linuxmirror.host/ubuntu-ports noble main restricted universe multiverse</pre>
+      </div>
+
+      <div id="cfg-arch" class="config-block">
+        <p>Edit <code>/etc/pacman.d/mirrorlist</code>:</p>
+        <pre><span class="comment">## linuxmirror.host</span>
+Server = https://linuxmirror.host/archlinux/$repo/os/$arch</pre>
+      </div>
+
+      <div id="cfg-fedora" class="config-block">
+        <p>Create <code>/etc/yum.repos.d/linuxmirror.repo</code>:</p>
+        <pre>[linuxmirror-fedora]
+name=linuxmirror.host - Fedora $releasever - $basearch
+baseurl=https://linuxmirror.host/fedora/releases/$releasever/Everything/$basearch/os/
+enabled=1
+gpgcheck=1</pre>
+      </div>
+
+      <div id="cfg-alpine" class="config-block">
+        <p>Edit <code>/etc/apk/repositories</code>:</p>
+        <pre>https://linuxmirror.host/alpine/v3.20/main
+https://linuxmirror.host/alpine/v3.20/community</pre>
+      </div>
+    </section>
+
+    <section id="contact">
+      <h2 class="section-title">Contact</h2>
+      <div class="contact-info">
+        <p>For mirror requests, abuse reports, or infrastructure questions:</p>
+        <p><strong>Email:</strong> <a href="mailto:mirror@linuxmirror.host">mirror@linuxmirror.host</a></p>
+        <p><strong>Abuse:</strong> <a href="mailto:abuse@linuxmirror.host">abuse@linuxmirror.host</a></p>
+        <p>This mirror is operated as a community service. We do not collect personal data from users accessing mirror content.</p>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <div class="container">
+      <p>linuxmirror.host &mdash; Community Linux Mirror &mdash; Frankfurt, DE</p>
+      <p class="footer-small">All trademarks belong to their respective owners. This mirror is not affiliated with any Linux distribution project.</p>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
