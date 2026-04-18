@@ -6,18 +6,29 @@ The static site poses as a public mirror; actual proxying requires credentials.
 ## How it works
 
 ```
-client  ──HTTPS──►  nginx (your existing container)
-                       │
-                       ├── /            → static website (public)
-                       │
-                       ├── /ubuntu/     ┐
-                       ├── /debian/     │  Basic Auth required
-                       ├── /archlinux/  ├► proxy_pass → official upstream
-                       ├── /alpine/     │
-                       └── ...          ┘
+browser / apt / pacman / VLESS client
+        │
+        │ TCP :443
+        ▼
+  Nginx stream  ──── tcp passthrough ──────────────► Xray Reality :3050
+  (no TLS)                                                  │
+                                                ├── VLESS → tunnel
+                                                │
+                                                └── non-VLESS (fallback)
+                                                         │
+                                                         ▼
+                                                   Nginx HTTP :8080
+                                                         │
+                                                 ├── /           → static site
+                                                 ├── /ubuntu/    ┐ Basic Auth
+                                                 ├── /debian/    ├► proxy upstream
+                                                 └── ...         ┘
 ```
 
-The `Authorization` header is stripped before forwarding to upstream, so credentials never leave your server.
+Nginx stream не трогает TLS — передаёт сырой TCP в Xray.  
+Xray сам различает VLESS от обычного HTTPS и делает fallback на nginx :8080.
+
+The `Authorization` header is stripped before forwarding to upstream — credentials never leave your server.
 
 ---
 
@@ -30,61 +41,73 @@ linuxmirror/
 ├── app.js
 ├── add-user.sh             # credential management
 └── nginx/
-    ├── upstreams.conf      # upstream blocks  → include inside http {}
-    ├── locations.conf      # location blocks  → include inside server {}
+    ├── stream.conf         # include inside stream {} — tcp proxy :443 → Xray :3050
+    ├── linuxmirror.conf    # include inside http {}  — website + mirror on :8080
     └── .htpasswd           # created by add-user.sh, never commit this
 ```
 
 ---
 
-## Integration with your existing nginx container
+## Setup
 
-### 1. Mount the files
+### 1. Nginx — stream block (tcp proxy on 443)
 
-Add to your existing nginx service in `docker-compose.yml`:
-
-```yaml
-services:
-  nginx:
-    volumes:
-      - ./nginx/upstreams.conf:/etc/nginx/upstreams.conf:ro
-      - ./nginx/locations.conf:/etc/nginx/locations.conf:ro
-      - ./nginx/.htpasswd:/etc/nginx/.htpasswd:ro
-      - ./:/var/www/html:ro
-```
-
-### 2. Edit your nginx.conf
+В главном `nginx.conf` добавить блок `stream` на том же уровне что и `http`:
 
 ```nginx
-http {
-    # ...existing settings...
-
-    include /etc/nginx/upstreams.conf;   # ← add here
-
-    server {
-        listen 443 ssl http2;
-        server_name linuxmirror.host;
-
-        root /var/www/html;
-
-        # ...your SSL, HSTS, etc...
-
-        include /etc/nginx/locations.conf;  # ← add here
-    }
+stream {
+    include /etc/nginx/stream.conf;
 }
 ```
 
-### 3. Create the first user
+Убедиться что модуль есть:
+```bash
+nginx -V 2>&1 | grep -- --with-stream
+```
+
+### 2. Nginx — http block (website + mirror on 8080)
+
+```bash
+cp nginx/linuxmirror.conf /etc/nginx/conf.d/linuxmirror.conf
+cp index.html style.css app.js /var/www/linuxmirror/
+nginx -t && systemctl reload nginx
+```
+
+### 3. Xray inbound config
+
+```json
+{
+  "port": 3050,
+  "listen": "127.0.0.1",
+  "protocol": "vless",
+  "settings": {
+    "clients": [{ "id": "...", "flow": "xtls-rprx-vision" }],
+    "decryption": "none",
+    "fallbacks": [
+      { "dest": "127.0.0.1:8080" }
+    ]
+  },
+  "streamSettings": {
+    "network": "tcp",
+    "security": "reality",
+    "realitySettings": {
+      "dest": "127.0.0.1:8080",
+      "serverNames": ["linuxmirror.host"],
+      "privateKey": "...",
+      "shortIds": ["..."]
+    }
+  }
+}
+```
+
+> `dest` в `realitySettings` — откуда Xray берёт TLS-ответ для маскировки (наш nginx :8080).  
+> `fallbacks.dest` — куда идёт не-VLESS трафик (тот же nginx :8080).
+
+### 4. Create the first user
 
 ```bash
 ./add-user.sh myuser
-```
-
-### 4. Reload nginx
-
-```bash
-docker compose exec nginx nginx -t        # verify config
-docker compose exec nginx nginx -s reload
+nginx -s reload
 ```
 
 ---
@@ -171,9 +194,15 @@ gpgcheck=1
 ## Verify it works
 
 ```bash
-# should return 401 without credentials
+# website accessible (200)
+curl -I https://linuxmirror.host/
+
+# mirror returns 401 without credentials
 curl -I https://linuxmirror.host/ubuntu/dists/noble/Release
 
-# should return 200 with credentials
+# mirror returns 200 with credentials
 curl -I https://USER:PASS@linuxmirror.host/ubuntu/dists/noble/Release
+
+# check nginx sees correct dest port
+ss -tlnp | grep 3050
 ```
