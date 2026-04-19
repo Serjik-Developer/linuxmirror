@@ -73,7 +73,30 @@ cp index.html style.css app.js /var/www/linuxmirror/
 nginx -t && systemctl reload nginx
 ```
 
-### 3. Xray inbound config
+### 3. Generate keys (per server)
+
+```bash
+chmod +x xray/generate-keys.sh
+
+# запустить для каждого сервера
+./xray/generate-keys.sh s1   # → keys-s1.txt
+./xray/generate-keys.sh s2   # → keys-s2.txt
+# ...
+./xray/generate-keys.sh s6   # → keys-s6.txt
+```
+
+Каждый файл содержит UUID, PrivateKey, PublicKey, ShortId и готовую ссылку для клиента.
+
+| Сервер | Subdomain | PrivateKey | ShortId | UUID |
+|--------|-----------|------------|---------|------|
+| s1 | s1.linuxmirror.host | из keys-s1.txt | из keys-s1.txt | общий |
+| s2 | s2.linuxmirror.host | из keys-s2.txt | из keys-s2.txt | общий |
+| … | … | … | … | … |
+
+> UUID один на всех серверах — клиент работает с любым из них без смены настроек.  
+> PrivateKey/PublicKey/ShortId уникальны для каждого сервера.
+
+### 4. Xray inbound config
 
 ```json
 {
@@ -103,7 +126,7 @@ nginx -t && systemctl reload nginx
 > `dest` в `realitySettings` — откуда Xray берёт TLS-ответ для маскировки (наш nginx :8080).  
 > `fallbacks.dest` — куда идёт не-VLESS трафик (тот же nginx :8080).
 
-### 4. Create the first user
+### 5. Create the first user
 
 ```bash
 ./add-user.sh myuser
