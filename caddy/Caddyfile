@@ -1,0 +1,185 @@
+# Xray Reality fallback + Reality dest → этот Caddy на :8080
+# В Xray inbound:
+#   "fallbacks": [{ "dest": "127.0.0.1:8080" }]
+#   "realitySettings": { "dest": "127.0.0.1:8080", ... }
+#
+# Создать хэш пароля: caddy hash-password --plaintext "yourpassword"
+# Вставить результат вместо REPLACE_HASH ниже
+
+{
+    auto_https off        # TLS не нужен — Xray уже снял его
+    admin off
+}
+
+:8080 {
+
+    # ── Статический сайт (публично) ───────────────────────────────────
+    handle / {
+        root * /var/www/linuxmirror
+        file_server
+    }
+
+    handle /index.html {
+        root * /var/www/linuxmirror
+        file_server
+    }
+
+    handle /*.css {
+        root * /var/www/linuxmirror
+        file_server
+    }
+
+    handle /*.js {
+        root * /var/www/linuxmirror
+        file_server
+    }
+
+    # ── Зеркало (Basic Auth) ──────────────────────────────────────────
+
+    handle /ubuntu/* {
+        basicauth {
+            mirror REPLACE_HASH
+        }
+        reverse_proxy archive.ubuntu.com:80 {
+            header_up Host "archive.ubuntu.com"
+            header_up -Authorization
+        }
+    }
+
+    handle /ubuntu-security/* {
+        basicauth {
+            mirror REPLACE_HASH
+        }
+        reverse_proxy security.ubuntu.com:80 {
+            header_up Host "security.ubuntu.com"
+            header_up -Authorization
+        }
+    }
+
+    handle /ubuntu-ports/* {
+        basicauth {
+            mirror REPLACE_HASH
+        }
+        reverse_proxy ports.ubuntu.com:80 {
+            header_up Host "ports.ubuntu.com"
+            header_up -Authorization
+        }
+    }
+
+    handle /debian/* {
+        basicauth {
+            mirror REPLACE_HASH
+        }
+        reverse_proxy deb.debian.org:80 {
+            header_up Host "deb.debian.org"
+            header_up -Authorization
+        }
+    }
+
+    handle /debian-security/* {
+        basicauth {
+            mirror REPLACE_HASH
+        }
+        reverse_proxy security.debian.org:80 {
+            header_up Host "security.debian.org"
+            header_up -Authorization
+        }
+    }
+
+    handle /archlinux/* {
+        basicauth {
+            mirror REPLACE_HASH
+        }
+        reverse_proxy mirrors.kernel.org:80 {
+            header_up Host "mirrors.kernel.org"
+            header_up -Authorization
+        }
+    }
+
+    handle /fedora/* {
+        basicauth {
+            mirror REPLACE_HASH
+        }
+        reverse_proxy dl.fedoraproject.org:80 {
+            header_up Host "dl.fedoraproject.org"
+            header_up -Authorization
+        }
+    }
+
+    handle /centos/* {
+        basicauth {
+            mirror REPLACE_HASH
+        }
+        reverse_proxy mirror.stream.centos.org:80 {
+            header_up Host "mirror.stream.centos.org"
+            header_up -Authorization
+        }
+    }
+
+    handle /rocky/* {
+        basicauth {
+            mirror REPLACE_HASH
+        }
+        reverse_proxy download.rockylinux.org:80 {
+            header_up Host "download.rockylinux.org"
+            header_up -Authorization
+        }
+    }
+
+    handle /alpine/* {
+        basicauth {
+            mirror REPLACE_HASH
+        }
+        reverse_proxy dl-cdn.alpinelinux.org:80 {
+            header_up Host "dl-cdn.alpinelinux.org"
+            header_up -Authorization
+        }
+    }
+
+    handle /opensuse/* {
+        basicauth {
+            mirror REPLACE_HASH
+        }
+        reverse_proxy download.opensuse.org:80 {
+            header_up Host "download.opensuse.org"
+            header_up -Authorization
+        }
+    }
+
+    handle /kali/* {
+        basicauth {
+            mirror REPLACE_HASH
+        }
+        reverse_proxy http.kali.org:80 {
+            header_up Host "http.kali.org"
+            header_up -Authorization
+        }
+    }
+
+    handle /nixos/* {
+        basicauth {
+            mirror REPLACE_HASH
+        }
+        reverse_proxy channels.nixos.org:80 {
+            header_up Host "channels.nixos.org"
+            header_up -Authorization
+        }
+    }
+
+    handle /gentoo/* {
+        basicauth {
+            mirror REPLACE_HASH
+        }
+        reverse_proxy distfiles.gentoo.org:80 {
+            header_up Host "distfiles.gentoo.org"
+            header_up -Authorization
+        }
+    }
+
+    # fallback — статический сайт
+    handle {
+        root * /var/www/linuxmirror
+        try_files {path} /index.html
+        file_server
+    }
+}

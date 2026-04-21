@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(chmod +x /c/Users/Sergi/linuxmirror/deploy-bridge.sh)",
+      "Bash(chmod +x /c/Users/Sergi/linuxmirror/xray/generate-bridge-keys.sh)"
+    ]
+  }
+}
